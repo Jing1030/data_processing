@@ -40,9 +40,13 @@ Creates venn diagrams.
 * rpm_norm_ser - reads per million normalizes the series
   * ser: pandas series of read counts
 
+![rpm normalization](readme_images/rpm_normalize.PNG)
+
 * rpkm_norm - read per kilobase per million normalizes the reads 
   * df: pandas dataframe of read counts 
   * gene_len_file: file with lenght of genes
+
+![rpkm normalization](readme_images/rpkm_normalize.PNG)
 
 * get_gene_len_gtf - adds together the exon lengths minus the overlap for each gene 
   * gtf_file: file with exon genomic locations in gtf format
@@ -54,6 +58,8 @@ Creates venn diagrams.
   * ref_samp: reference sample column name 
   * trim_fc_perc [optional]: percentage of top and bottom fold change values to trim; default 30 
   * trim_abs_perc [optional]: percentage of top and bottom absolute expression values to trim; default 5
+
+![TMM normalization](readme_images/tmm_normalize.PNG)
 
 ## TrimAndAlign class (trim_align.py)
 

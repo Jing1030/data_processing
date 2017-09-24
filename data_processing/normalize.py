@@ -138,7 +138,7 @@ def tmm_norm(df, ref_samp, trim_fc_perc=30, trim_abs_perc=5):
         two_ag = ygk_nS*ygk_nR
         ag = two_ag.map(lambda x: 0.5*math.log(x, 2)) # absE in EdgeR
 
-        # rank fold changes
+        # rank absolute expression
         n_ag = len(ag)
         ranks = ag.rank() # on ties, average of rank, used by R
         ag_keep_genes = ranks[(ranks > ((trim_abs_perc/100.0)*n_ag)) & (ranks < (1.0-(trim_abs_perc/100.0))*n_ag+1)].index.tolist()
