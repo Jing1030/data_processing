@@ -9,6 +9,6 @@ setup(name="data_processing",
       package_data={"data_processing": ["data/*.sam"]},
       include_package_data=True,
       install_requires=[
-           "matplotlib", "matplotlib-venn", "pandas", "paramiko" 
+           "matplotlib", "matplotlib-venn", "pandas", "paramiko", "scipy"
       ],
       zip_safe=False)
