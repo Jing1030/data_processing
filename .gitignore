@@ -1,0 +1,6 @@
+# ignore compiled python
+*.pyc
+
+# Distribution / packaging
+dist/
+*.egg-info/
