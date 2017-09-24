@@ -12,6 +12,33 @@ Custom python package to assist in data processing and database interactions.
 
 # Files 
 
+## dna_functions.py 
+
+Common functions for dealing with DNA and RNA sequences.
+
+### Functions:
+* rev_comp - reverse complements the passed in DNA or RNA sequence 
+* transcribe - transcribes the passed in DNA sequence to RNA
+* rev_trans - reverse transcribes the passed in RNA sequence to DNA 
+* dna_to_rna - directly converts DNA to RNA by replacing T with U 
+* rna_to_dna - directly converts RNA to DNA by replacing U with T
+
+## fold_change.py 
+
+Calculates the fold change and the log2 fold change.
+
+### Functions:
+* log_fold_change - Calculates the log2 fold change between experimental column(s) and
+the average of control columns and returns dataframe
+  * df: pandas dataframe 
+  * control_list: list of column names of control samples
+  * experimental_col: column name or list of column names of experimental/treatment sample(s) 
+* fold_change - Calculates the fold change between experimental column(s) and
+the average of control columns and returns dataframe
+  * df: pandas dataframe 
+  * control_list: list of column names of control samples
+  * experimental_col: column name or list of column names of experimental/treatment sample(s) 
+
 ## make_venn.py 
 
 Creates venn diagrams.
@@ -28,11 +55,18 @@ Creates venn diagrams.
 
 ## normalize.py 
 
-### Functions
+The functions inside this file are divided by normalization method.
+
+### Median Normalization
+
+![median normalization](readme_images/median_normalize.PNG)
+
 * med_norm - median normalizes a dataframe 
   * df: pandas dataframe of read counts
 
-![median normalization](readme_images/median_normalize.PNG)
+### RPM Normalization
+
+![rpm normalization](readme_images/RPM_normalize.PNG)
 
 * rpm_norm_df - read per million normalizes the dataframe
   * df: pandas dataframe of read counts
@@ -40,17 +74,21 @@ Creates venn diagrams.
 * rpm_norm_ser - reads per million normalizes the series
   * ser: pandas series of read counts
 
-![rpm normalization](readme_images/rpm_normalize.PNG)
+### RPKM Normalization
+
+![rpkm normalization](readme_images/RPKM_normalize.PNG)
 
 * rpkm_norm - read per kilobase per million normalizes the reads 
   * df: pandas dataframe of read counts 
   * gene_len_file: file with lenght of genes
 
-![rpkm normalization](readme_images/rpkm_normalize.PNG)
-
 * get_gene_len_gtf - adds together the exon lengths minus the overlap for each gene 
   * gtf_file: file with exon genomic locations in gtf format
   * out_file: file to output the lengths to 
+
+### TMM Normalization
+
+![TMM normalization](readme_images/tmm_normalize.PNG)
 
 * tmm_norm - trimmed mean of M-values normalizes the reads. Was adapted from [EdgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)'s 
 [calcNormFactors](https://github.com/Bioconductor-mirror/edgeR/blob/release-3.5/R/calcNormFactors.R) function.
@@ -58,8 +96,6 @@ Creates venn diagrams.
   * ref_samp: reference sample column name 
   * trim_fc_perc [optional]: percentage of top and bottom fold change values to trim; default 30 
   * trim_abs_perc [optional]: percentage of top and bottom absolute expression values to trim; default 5
-
-![TMM normalization](readme_images/tmm_normalize.PNG)
 
 ## TrimAndAlign class (trim_align.py)
 
