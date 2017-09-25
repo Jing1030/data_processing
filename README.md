@@ -17,14 +17,15 @@ Custom python package to assist in data processing and database interactions.
 
 ## Table of Contents
 
-* [dna_functions.py](#dna_functions.py)
-* [edit_db.py](#edit_db)
-* [fold_change.py](#fold_change)
-* [make_venn.py](#make_venn)
+* [dna_functions.py](#dnafunctions)
+* [edit_db.py](#editdb)
+* [fold_change.py](#foldchange)
+* [make_venn.py](#makevenn)
 * [normalize.py](#normalize)
-* [read_counting](#read_counting.py)
-* [TrimAndAlign](#TrimAndAlign-class-(trim_align.py))
+* [read_counting.py](#readcounting)
+* [TrimAndAlign Class](#trimandalign)
 
+<a name="dnafunction"></a>
 ## dna_functions.py 
 
 Common functions for dealing with DNA and RNA sequences.
@@ -36,6 +37,7 @@ Common functions for dealing with DNA and RNA sequences.
 * dna_to_rna - directly converts DNA to RNA by replacing T with U 
 * rna_to_dna - directly converts RNA to DNA by replacing U with T
 
+<a name="editdb"></a>
 ## edit_db.py 
 
 Functions to connect to and edit a MSSQL or MySQL database.
@@ -140,7 +142,7 @@ in one statement, looping until all rows are inserted. Returns True if successfu
 * format_value - formats the value for use in a SQL statement. Adds '' to strings and convertes python's None to NULL
   * value: value to format
 
-
+<a name="foldchange"></a>
 ## fold_change.py 
 
 Calculates the fold change and the log2 fold change.
@@ -157,6 +159,7 @@ the average of control columns and returns dataframe
   * control_list: list of column names of control samples
   * experimental_col: column name or list of column names of experimental/treatment sample(s) 
 
+<a name="makevenn"></a>
 ## make_venn.py 
 
 Creates venn diagrams.
@@ -171,6 +174,7 @@ Creates venn diagrams.
   * figsize [optional]: size (in inches) of figure; default (8,6)
   * high_qual [optional]: returns a higher quality (800 dpi) figure; default False
 
+<a name="normalize"></a>
 ## normalize.py 
 
 The functions inside this file are divided by normalization method.
@@ -215,6 +219,7 @@ The functions inside this file are divided by normalization method.
   * trim_fc_perc [optional]: percentage of top and bottom fold change values to trim; default 30 
   * trim_abs_perc [optional]: percentage of top and bottom absolute expression values to trim; default 5
 
+<a name="readcounting"></a>
 ## read_counting.py 
 
 Counts the reads which align to mature miRNAs or sgRNAs.
@@ -234,6 +239,7 @@ Counts the reads which align to mature miRNAs or sgRNAs.
   * sampleNameList: list of sample names, one per file in the same order 
   * sgRNANameList: list of names of sgRNAs in the library
 
+<a name="trimandalign"></a>
 ## TrimAndAlign class (trim_align.py)
 
 This class allows for NGS reads to be trimmed and aligned on a server which runs [Btrim](https://doi.org/10.1016/j.ygeno.2011.05.009),
