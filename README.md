@@ -6,11 +6,24 @@ Custom python package to assist in data processing and database interactions.
 
 * [Matplotlib](https://matplotlib.org/) - plotting library
 * [Matplotlib-Venn](https://pypi.python.org/pypi/matplotlib-venn) - creates venn diagrams
+* [MySQL.Connector](https://www.mysql.com/products/connector/) - connects to mySQL database
 * [Pandas](http://pandas.pydata.org/) - dataframes 
 * [Paramiko](http://www.paramiko.org/) - SSH connection
+* [PyODBC](https://github.com/mkleehammer/pyodbc) - connects to MSSQL database
 * [SciPy](https://www.scipy.org/) - scientific computing functions
+* [SSHTunnel](https://pypi.python.org/pypi/sshtunnel) - SSH tunnel
 
 # Files 
+
+## Table of Contents
+
+* [dna_functions](#dna_functions.py)
+* [edit_db](#edit_db.py)
+* [fold_change](#fold_change.py)
+* [make_venn](#make_venn.py)
+* [normalize](#normalize.py)
+* [read_counting](#read_counting.py)
+* [TrimAndAlign](#TrimAndAlign-class-(trim_align.py))
 
 ## dna_functions.py 
 
@@ -22,6 +35,111 @@ Common functions for dealing with DNA and RNA sequences.
 * rev_trans - reverse transcribes the passed in RNA sequence to DNA 
 * dna_to_rna - directly converts DNA to RNA by replacing T with U 
 * rna_to_dna - directly converts RNA to DNA by replacing U with T
+
+## edit_db.py 
+
+Functions to connect to and edit a MSSQL or MySQL database.
+
+### Functions:
+* connect_db - creates a conncection to a MySQL or MSSQL database
+  * sql_version: version of SQL of the database (ie MSSQL or MySQL)
+  * db_name [optional]: name of the database to connect to. If MySQL, db_prefix will be added automatically; default: None
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None
+* close_db_connection - closes the connection to the database 
+  * connection: database connection
+  * server [optional]: server connection tunnel; default: None 
+* excute_with_error_check - executes the passed in string with error checking
+  * execute_str: SQL string to execute 
+  * connection: connection to the database
+  * cursor: database cursor 
+  * sql_version: version of SQL of the database (ie MSSQL or MySQL)
+* check_table_exists - checks if a table with the passed in name already exists in the database
+  * table_name: table name to check if exists 
+  * cursor: database cursor 
+* make_table - Creates a new table with the passed in columns. Several checks are run to ensure database integrity
+will not be unknowingly compromised (see flow chart)
+![make_table](readme_images/make_table_outline.PNG)
+  * table_name: name of the table to create 
+  * columns_dict: dictionary of column names with a list of conditions (ie 'NOT NULL') and datatypes
+  * other_conditions [optional]: a list of other conditions for the table, such as primary key and foreign keys
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* check_fk - checks if the table has a foreign key referencing it 
+  * table: name of the table to check 
+  * cursor: database cursor 
+  * sql_version: version of SQL of the database (ie MSSQL or MySQL)
+* delete_table - drops table from the database after checking for foreign key dependencies 
+  * table: name of the table to drop 
+  * connection: connection to the database
+  * cursor: database cursor 
+  * sql_version: version of SQL of the database (ie MSSQL or MySQL)
+* clear_table - truncates the table. This function ignores foreign key constraints, so make sure to clear referencing table first!
+  * table: name of the table to clear
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* add_column - adds a column to an existing table 
+  * column_name: name of column to add 
+  * column_type: type of the new column 
+  * table: name of the table to add the column to 
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* make_row - creates a new row with the passed in data for the given table
+  * insert_dict: dictionary of column name: value to insert
+  * table: name of the table to add the row to 
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* make_many_rows - Instead of inserting a single row into the database, inserts up to 950 
+in one statement, looping until all rows are inserted. Returns True if successful.
+  * insert_dict: dictionary of column name: list of value to insert
+  * table: name of the table to add the rows to 
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* update_row - Updates a row in the table 
+  * update_dict: dictionary of column names and values to be updated
+  * condition_dict: dictionary of column names and values to identify the row to be updated
+  * table: name of table with row to be updated
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* update_many_rows - Updates multiple rows in the table 
+  * update_dict: dictionary of column names and list of values to be updated
+  * condition_dict: dictionary of column names and list of values to identify the rows to be updated
+  * table: name of table with rows to be updated
+  * db_name [optional]: name of the database to connect to; default: None, will be replaced with config file default during connection
+  * sql_version [optional]: version of SQL of the database (ie MSSQL or MySQL); default: MSSQL
+  * firewall [optional]: if behind a firewall, will use ssh tunneling to connect to database; default: False
+  * key_loc [optional]: file location of the ssh key for accessing MySQL database; default: None, will be replaced with config file default during connection
+  * db_pwd [optional]: database user password; default: None
+  * key_pwd [optional]: password for the ssh key; default: None 
+* format_value - formats the value for use in a SQL statement. Adds '' to strings and convertes python's None to NULL
+  * value: value to format
+
 
 ## fold_change.py 
 
@@ -96,6 +214,25 @@ The functions inside this file are divided by normalization method.
   * ref_samp: reference sample column name 
   * trim_fc_perc [optional]: percentage of top and bottom fold change values to trim; default 30 
   * trim_abs_perc [optional]: percentage of top and bottom absolute expression values to trim; default 5
+
+## read_counting.py 
+
+Counts the reads which align to mature miRNAs or sgRNAs.
+
+### functions:
+* create_mir_dict - Creates a dictionary of chromosomes which hold a positive strand and negative strand dictionary
+        which each hold a dictionary with genomic locations +/- 5 bp as keys and mature miRNA IDs of the miRNAs 
+        which align to that location as values. This dictionary includes not only the genomic location of the mature
+        miRNA, but also the genomic locations in hg38 which are identical to the mature miRNA. Also creates a dictionary 
+        with every matID as keys and 0 as values to intialize counter object
+* find_mir_match - Counts the reads which overlap with mature miRNAs. Returns the read counter and a QC counter. 
+  * f_name: location of the sam file with the aligned reads 
+  * chrom_dict: miRNA dictionary created by `create_mir_dict`
+  * mat_ids: dictionary of all mature read counts with 0 key values to initialize read counter. Created by `create_mir_dict`.
+* count_sgrna - Counts the reads which align to sgRNAs. Returns a pandas dataframe of read counts and a summary dataframe.
+  * fnameList: list of sam files with aligned reads from amplicon sequencing
+  * sampleNameList: list of sample names, one per file in the same order 
+  * sgRNANameList: list of names of sgRNAs in the library
 
 ## TrimAndAlign class (trim_align.py)
 

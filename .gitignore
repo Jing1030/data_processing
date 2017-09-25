@@ -4,3 +4,6 @@
 # Distribution / packaging
 dist/
 *.egg-info/
+
+# Ignore database configuration file
+data_processing/data/config.csv
