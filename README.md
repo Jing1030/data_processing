@@ -17,11 +17,11 @@ Custom python package to assist in data processing and database interactions.
 
 ## Table of Contents
 
-* [dna_functions](#dna_functions.py)
-* [edit_db](#edit_db.py)
-* [fold_change](#fold_change.py)
-* [make_venn](#make_venn.py)
-* [normalize](#normalize.py)
+* [dna_functions.py](#dna_functions.py)
+* [edit_db.py](#edit_db)
+* [fold_change.py](#fold_change)
+* [make_venn.py](#make_venn)
+* [normalize.py](#normalize)
 * [read_counting](#read_counting.py)
 * [TrimAndAlign](#TrimAndAlign-class-(trim_align.py))
 
@@ -61,7 +61,7 @@ Functions to connect to and edit a MSSQL or MySQL database.
   * cursor: database cursor 
 * make_table - Creates a new table with the passed in columns. Several checks are run to ensure database integrity
 will not be unknowingly compromised (see flow chart)
-![make_table](readme_images/make_table_outline.PNG)
+![make_table](readme_images/make_table_outline.png)
   * table_name: name of the table to create 
   * columns_dict: dictionary of column names with a list of conditions (ie 'NOT NULL') and datatypes
   * other_conditions [optional]: a list of other conditions for the table, such as primary key and foreign keys
