@@ -9,6 +9,6 @@ setup(name="data_processing",
       package_data={"data_processing": ["data/*.sam", "data/*.csv"]},
       include_package_data=True,
       install_requires=[
-           "matplotlib", "matplotlib-venn", "mysql.connector", "pandas", "paramiko", "pyodbc", "scipy", "sshtunnel"
+           "matplotlib", "matplotlib-venn", "pandas", "paramiko", "pyodbc", "scipy", "sshtunnel"
       ],
       zip_safe=False)

@@ -10,7 +10,19 @@ class TrimAndAlign:
         """
             Creates an ssh connection, log file and connection to server
         """
-        
+        # software locations on server
+        self.btrim_dir = "/opt/Btrim"
+        self.bowtie_dir = "/opt/bowtie-1.2.1.1"
+        self.bowtie2_dir = "/opt/bowtie2-2.3.3"
+        self.samtools_dir = "/opt/samtools-0.1.19/bin"
+        self.tophat_dir = "/opt/tophat-2.1.1"
+
+        # server address
+        self.server_address = "p-bioresearch.coh.org"
+
+        # server directory to work in
+        self.server_directory = "/data/jkurata/"
+
         self.ssh = paramiko.SSHClient()
         self.createLog(log_file)
         self.connectToServer()
@@ -49,12 +61,12 @@ class TrimAndAlign:
         """
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         # prompts the user for username and password
-        usrName = raw_input("p-bioresearch user name: ")
-        psswrd = getpass.getpass("p-bioresearch password: ")
+        usrName = raw_input("Server user name: ")
+        psswrd = getpass.getpass("Server password: ")
         try:
-            self.ssh.connect('p-bioresearch.coh.org', username=usrName,
+            self.ssh.connect(self.server_address, username=usrName,
                              password=psswrd)
-            self.logger.info("Successfully connected to p-bioresearch")
+            self.logger.info("Successfully connected to server")
         except paramiko.AuthenticationException:
             self.logger.error("Could Not Connect to Server: Authentication Failed", exc_info=True)
             sys.exit("Authentication failed")
@@ -73,26 +85,26 @@ class TrimAndAlign:
         Closes the ssh connection to the server
         """
         self.ssh.close()
-        self.logger.info("Closed connection to p-bioresearch")
+        self.logger.info("Closed connection to server")
         
     def fileToServer(self, curLocation, fname, ext=''):
         """
         Will move file at curLocation to the server
-        On the server, file with be at /data/jkurata/fname.ext
+        On the server, file with be at server_directory+fname.ext
         """
         self.logger.info("Moving file {} to server".format(curLocation))
         sftp = self.ssh.open_sftp()
-        placeToPut = '/data/jkurata/'+fname+ext
+        placeToPut = self.server_directory+fname+ext
         sftp.put(curLocation, placeToPut)
         self.logger.info("File {} sucessfully moved to {} on server".format(curLocation, placeToPut))
     
     def fileFromServer(self, locLocation, fname, ext=''):
         """
-        Will move file from /data/jkurata/fname.ext
+        Will move file from server_directory+fname.ext
         to locLocation on local computer where it will have the name fname.ext
         """
         placeToPut = locLocation + fname +ext
-        placeToGet = '/data/jkurata/'+fname+ext
+        placeToGet = self.server_directory+fname+ext
         
         self.logger.info("Copying file {} from server to {}".format(placeToGet, placeToPut))
         sftp = self.ssh.open_sftp()
@@ -110,7 +122,7 @@ class TrimAndAlign:
         sFile = sampName + '.fastq'
         oFile = sampName + '_trimmed.fastq'
 
-        command_str = "export PATH=$PATH:/opt/Btrim; cd /data/jkurata; btrim64 {} -t {} -p {} -o {}".format(param, sFile, tFile, oFile)
+        command_str = "export PATH=$PATH:{}; cd {}; btrim64 {} -t {} -p {} -o {}".format(self.btrim_dir, self.server_directory, param, sFile, tFile, oFile)
         
         self.logger.info("Start trimming using command: {}".format(command_str))
         
@@ -129,7 +141,7 @@ class TrimAndAlign:
         # Concatenate the list of files together
         files = ",".join(fileList)
 
-        command_str = "export PATH=$PATH:/opt/bowtie2-2.0.2/bin/;cd /data/jkurata; bowtie2-build {} {}".format(files, indexName)
+        command_str = "export PATH=$PATH:{};cd {}; bowtie2-build {} {}".format(self.bowtie2_dir, self.server_directory, files, indexName)
         
         self.logger.info("Start making index using command: {}".format(command_str))
         
@@ -146,7 +158,7 @@ class TrimAndAlign:
         # Concatenate the list of files together
         files = ",".join(fileList)
 
-        command_str = "export PATH=$PATH:/opt/bowtie-0.12.7;cd /data/jkurata; bowtie-build {} {}".format(files, indexName)
+        command_str = "export PATH=$PATH:{};cd {}; bowtie-build {} {}".format(self.bowtie_dir, self.server_directory, files, indexName)
         
         self.logger.info("Start making index using command: {}".format(command_str))
         
@@ -164,8 +176,8 @@ class TrimAndAlign:
         oFile = sampName+'_aligned.sam'
         # The -L tells length of seed to use
         # The -i denotes the equation to use to calculate the intervals between seed substrings
-        command_str = 'export PATH=$PATH:/opt/bowtie2-2.0.2/bin/; cd /data/jkurata; bowtie2 {} -p {} -x {} \
-        -U {} -S {}'.format(options, processors, indexName, sFile, oFile)
+        command_str = 'export PATH=$PATH:{}; cd {}; bowtie2 {} -p {} -x {} \
+        -U {} -S {}'.format(self.bowtie2_dir, self.server_directory, options, processors, indexName, sFile, oFile)
         
         self.logger.info("Start alignment using command: {}".format(command_str))
         
@@ -182,7 +194,8 @@ class TrimAndAlign:
         sFile = sampName+'.fastq'
         oFile = sampName+'_bowtie-aligned.sam'
         
-        command_str = "export PATH=$PATH:/opt/bowtie-0.12.7; cd /data/jkurata; bowtie {} {} -q {} {}".format(options, indexName, sFile, oFile)
+        command_str = "export PATH=$PATH:{}; cd {}; bowtie {} {} -q {} {}".format(self.bowtie_dir, 
+        self.server_directory, options, indexName, sFile, oFile)
         
         self.logger.info("Start alignment using command: {}".format(command_str))
         
@@ -201,8 +214,8 @@ class TrimAndAlign:
         
         # tophat requires bowtie2 and samtools be in PATH
         # need to use beta version of bowtie2 due to how versioning is checked
-        command_str = "export PATH=$PATH:/opt/bowtie2-2.0.0-beta5/bin:/opt/samtools-0.1.19/bin:/opt/tophat-2.0.4;\
- cd /data/jkurata; tophat {} -p {} -o {} {} {}".format(options, processors, oDir, indexName, sFile)
+        command_str = "export PATH=$PATH:{}:{}:{}; cd {}; tophat {} -p {} -o {} {} {}".format(self.bowtie2_dir, 
+        self.samtools_dir, self.tophat_dir, self.server_directory, options, processors, oDir, indexName, sFile)
         
         self.logger.info("Start alignment using command: {}".format(command_str))
         
@@ -218,7 +231,7 @@ class TrimAndAlign:
         match = re.match('^(.*?)_(trimmed|aligned|bowtie-aligned)', sampName)
         try:
             name = match.group(1)
-            command_str = 'cd /data/jkurata; rm '+name+'*.fastq; rm '+name+'*.sam'
+            command_str = "cd {}; rm {}*.fastq; rm {}*.sam".format(self.server_directory, name, name)
             self.logger.info("Deleting files using command: {}".format(command_str))
             stdin, stdout, stderr = self.ssh.exec_command(command_str)
             for line in stdout:

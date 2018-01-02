@@ -245,7 +245,7 @@ Counts the reads which align to mature miRNAs or sgRNAs.
 This class allows for NGS reads to be trimmed and aligned on a server which runs [Btrim](https://doi.org/10.1016/j.ygeno.2011.05.009),
 [Bowtie](http://bowtie-bio.sourceforge.net/index.shtml), [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) and
 [TopHat](https://ccb.jhu.edu/software/tophat/manual.shtml). Creation of a TrimAndAlign object results in a connection to the server and
-creation of a log file. The connection and log file are closed when the object is deleted.
+creation of a log file. The connection and log file are closed when the object is deleted. 
 
 ### Functions:
 * fileToServer: moves file to server
