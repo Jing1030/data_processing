@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 
 def log_fold_change(df, control_list, experimental_col):
     """
@@ -12,7 +13,10 @@ def log_fold_change(df, control_list, experimental_col):
     controlSer = df.loc[:,control_list].mean(axis=1)
     experDF = df.loc[:,experimental_col]
     fcDF = experDF.div(controlSer, axis=0)
-    fcDF= fcDF.applymap(lambda x: math.log(x,2))
+    if isinstance(fcDF, pd.DataFrame):
+        fcDF= fcDF.applymap(lambda x: math.log(x,2))
+    else:
+        fcDF= fcDF.apply(lambda x: math.log(x,2))
     return fcDF
 
 def fold_change(df, control_list, experimental_col):

@@ -48,16 +48,16 @@ def connect_db(sql_version, db_name=None, firewall=False,
     
     # For MySQL
     if sql_version == "MySQL":
-        host_ip = df["host_ip", "value"]
-        user_name = df["host_user_name", "value"]
-        sql_user_name = df["mysql_user_name", "value"]
-        db_prefix = df["db_prefix", "value"]
+        host_ip = df.loc["host_ip", "value"]
+        user_name = df.loc["host_user_name", "value"]
+        sql_user_name = df.loc["mysql_user_name", "value"]
+        db_prefix = df.loc["db_prefix", "value"]
         if db_pwd is None:
             db_pwd = getpass.getpass("MySQL password: ")
 
     # Connect to microsoft SQL server (local)
     if sql_version == "MSSQL":
-        server_str = df["ms_server", "value"]
+        server_str = df.loc["ms_server", "value"]
         connection_string = "DRIVER={{SQL Server Native Client 11.0}};SERVER={};DATABASE={};\
         Trusted_Connection=yes".format(server_str, db_name)
         connection = pyodbc.connect(connection_string)
@@ -70,7 +70,7 @@ def connect_db(sql_version, db_name=None, firewall=False,
     # Connect to MySQL behind a firewall by ssh tunneling
     elif sql_version == "MySQL" and firewall == True:
         if key_loc is None:
-            key_loc = df["key_loc", "value"]
+            key_loc = df.loc["key_loc", "value"]
         if key_pwd is None:
             key_pwd = getpass.getpass("ssh key password: ")
         server = SSHTunnelForwarder((host_ip, 22), ssh_pkey=key_loc, ssh_private_key_password=key_pwd, 

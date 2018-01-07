@@ -1,5 +1,5 @@
 from data_processing.edit_db import *
-#from data_processing.query_db import *
+from data_processing.query_db import *
 from data_processing.dna_functions import *
 from data_processing.normalize import *
 from data_processing.fold_change import *

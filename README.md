@@ -40,7 +40,16 @@ Common functions for dealing with DNA and RNA sequences.
 <a name="editdb"></a>
 ## edit_db.py 
 
-Functions to connect to and edit a MSSQL or MySQL database.
+Functions to connect to and edit a MSSQL or MySQL database. All of the specifications for 
+the database connection should be included in a config.csv file. This file contains two 
+columns: parameters and values. The parameters are:
+* default_db [optional]: default database to connect to, could also pass db_name as
+parameter of functions
+* host_ip: IP address of the database
+* host_user_name: user name on server
+* mysql_user_name [optional]: MySQL user name
+* db_prefix: if the database has a prefix, can add this, otherwise use empty string
+* key_loc [optional]: location of the ssh key, if ssh tunneling is necessary to connect
 
 ### Functions:
 * connect_db - creates a conncection to a MySQL or MSSQL database
