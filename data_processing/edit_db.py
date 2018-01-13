@@ -44,7 +44,7 @@ def connect_db(sql_version, db_name=None, firewall=False,
     df = pd.read_csv(config_file, header=0, index_col=0)
 
     if db_name is None:
-        db_name = df["default_db", "value"]
+        db_name = df.loc["default_db", "value"]
     
     # For MySQL
     if sql_version == "MySQL":
@@ -53,7 +53,10 @@ def connect_db(sql_version, db_name=None, firewall=False,
         sql_user_name = df.loc["mysql_user_name", "value"]
         db_prefix = df.loc["db_prefix", "value"]
         if db_pwd is None:
-            db_pwd = getpass.getpass("MySQL password: ")
+            try: 
+                db_pwd = df.loc["db_pwd", "value"]
+            except KeyError:
+                db_pwd = getpass.getpass("MySQL password: ")
 
     # Connect to microsoft SQL server (local)
     if sql_version == "MSSQL":
@@ -72,7 +75,10 @@ def connect_db(sql_version, db_name=None, firewall=False,
         if key_loc is None:
             key_loc = df.loc["key_loc", "value"]
         if key_pwd is None:
-            key_pwd = getpass.getpass("ssh key password: ")
+            try:
+                key_pwd = df.loc["key_pwd", "value"]
+            except KeyError:
+                key_pwd = getpass.getpass("ssh key password: ")
         server = SSHTunnelForwarder((host_ip, 22), ssh_pkey=key_loc, ssh_private_key_password=key_pwd, 
                                     ssh_username=user_name, remote_bind_address=("127.0.0.1", 3306))
         server.start()
@@ -149,7 +155,7 @@ def make_table(table_name, columns_dict, other_conditions=[], db_name=None,
         db_pwd [optional]: database user password; default: None
         key_pwd [optional]: password for the ssh key; default: None
     """
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
@@ -272,7 +278,7 @@ def clear_table(table, db_name=None, sql_version="MSSQL", firewall=False, db_pwd
         db_pwd [optional]: database user password; default: None
         key_pwd [optional]: password for the ssh key; default: None
     """
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
     fks = check_fk(table, cursor, sql_version)
@@ -314,7 +320,7 @@ def add_column(column_name, column_type, table, db_name=None, sql_version="MSSQL
         db_pwd [optional]: database user password; default: None
         key_pwd [optional]: password for the ssh key; default: None
     """
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
@@ -341,7 +347,7 @@ def make_row(insert_dict, table, db_name=None, sql_version="MSSQL", firewall=Fal
         db_pwd [optional]: database user password; default: None
         key_pwd [optional]: password for the ssh key; default: None
     """
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
@@ -378,7 +384,7 @@ def make_many_rows(insert_dict, table, db_name=None,
     """
     MAX_VAL = 950.0
 
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
@@ -434,7 +440,7 @@ def update_row(update_dict, condition_dict, table, db_name=None,
         db_pwd [optional]: database user password; default: None
         key_pwd [optional]: password for the ssh key; default: None
     """
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
@@ -483,7 +489,7 @@ def update_many_rows(update_dict, condition_dict, table, db_name=None,
         key_pwd [optional]: password for the ssh key; default: None
     """
     CHUNK_SIZE = 1000
-    connection, server = connect_db(db_name, sql_version, firewall=firewall, 
+    connection, server = connect_db(sql_version,  db_name=db_name, firewall=firewall, 
                                     key_loc=key_loc, db_pwd=db_pwd, key_pwd=key_pwd)
     cursor = connection.cursor()
 
