@@ -12,7 +12,7 @@ class TrimAndAlign:
         """
         # software locations on server
         self.btrim_dir = "/opt/Btrim"
-        self.bowtie_dir = "/opt/bowtie-1.2.1.1"
+        self.bowtie_dir = "/opt/bowtie-0.12.7"
         self.bowtie2_dir = "/opt/bowtie2-2.3.3"
         self.samtools_dir = "/opt/samtools-0.1.19/bin"
         self.tophat_dir = "/opt/tophat-2.1.1"
